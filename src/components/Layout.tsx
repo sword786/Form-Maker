@@ -1,7 +1,6 @@
 import { Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../lib/AuthContext';
 import { Button } from './ui/button';
-import { ScrollArea } from './ui/scroll-area';
 
 export function Layout() {
   const { user, signIn, logOut, loading } = useAuth();
