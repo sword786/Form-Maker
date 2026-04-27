@@ -1,0 +1,45 @@
+{
+  "entities": {
+    "Form": {
+      "title": "Feedback Form",
+      "description": "A feedback form with questions.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "creatorId": { "type": "string" },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "aiAnalysis": { "type": "object" },
+        "createdAt": { "type": "string", "format": "timestamp" },
+        "updatedAt": { "type": "string", "format": "timestamp" }
+      },
+      "required": ["title", "creatorId", "questions", "createdAt", "updatedAt"]
+    },
+    "Submission": {
+      "title": "Form Submission",
+      "description": "A submission for a specific form.",
+      "type": "object",
+      "properties": {
+        "submitterId": { "type": "string" },
+        "answers": { "type": "object" },
+        "submittedAt": { "type": "string", "format": "timestamp" }
+      },
+      "required": ["answers", "submittedAt"]
+    }
+  },
+  "firestore": {
+    "/forms/{formId}": {
+      "schema": { "$ref": "#/entities/Form" },
+      "description": "Forms created by users."
+    },
+    "/forms/{formId}/submissions/{submissionId}": {
+      "schema": { "$ref": "#/entities/Submission" },
+      "description": "Submissions for a particular form."
+    }
+  }
+}

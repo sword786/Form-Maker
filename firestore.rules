@@ -1,0 +1,74 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) { 
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isSignedIn() { return request.auth != null; }
+
+    function isFormValid(data) {
+      return data.keys().hasAll(['title', 'creatorId', 'questions', 'createdAt', 'updatedAt']) &&
+             data.title is string && data.title.size() <= 200 &&
+             data.creatorId == request.auth.uid &&
+             data.questions is list && data.questions.size() <= 100 &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp &&
+             (!('description' in data) || (data.description is string && data.description.size() <= 10000)) &&
+             (!('isAcceptingResponses' in data) || data.isAcceptingResponses is bool) &&
+             (!('collectEmail' in data) || data.collectEmail is bool) &&
+             (!('showProgressBar' in data) || data.showProgressBar is bool) &&
+             (!('confirmationMessage' in data) || data.confirmationMessage is string) &&
+             (!('aiAnalysis' in data) || data.aiAnalysis is map);
+    }
+
+    function isSubmissionValid(data) {
+      return data.keys().hasAll(['answers', 'submittedAt']) &&
+             data.answers is map &&
+             data.submittedAt is timestamp &&
+             (!('respondentEmail' in data) || data.respondentEmail is string) &&
+             (!('submitterId' in data) || (isSignedIn() && data.submitterId == request.auth.uid));
+    }
+
+    match /forms/{formId} {
+      allow get: if true;
+      allow list: if isSignedIn() && existing().creatorId == request.auth.uid;
+      
+      allow create: if isSignedIn() && 
+                    isValidId(formId) && 
+                    isFormValid(incoming()) && 
+                    incoming().createdAt == request.time &&
+                    incoming().updatedAt == request.time;
+                    
+      allow update: if isSignedIn() &&
+                    existing().creatorId == request.auth.uid &&
+                    isFormValid(incoming()) &&
+                    incoming().creatorId == existing().creatorId &&
+                    incoming().createdAt == existing().createdAt &&
+                    incoming().updatedAt == request.time &&
+                    incoming().diff(existing()).affectedKeys().hasOnly(['title', 'description', 'questions', 'isAcceptingResponses', 'collectEmail', 'showProgressBar', 'confirmationMessage', 'aiAnalysis', 'updatedAt']);
+
+      allow delete: if isSignedIn() && existing().creatorId == request.auth.uid;
+
+      match /submissions/{submissionId} {
+        allow read: if isSignedIn() && get(/databases/$(database)/documents/forms/$(formId)).data.creatorId == request.auth.uid;
+        
+        allow create: if (
+                        !('isAcceptingResponses' in get(/databases/$(database)/documents/forms/$(formId)).data) || 
+                        get(/databases/$(database)/documents/forms/$(formId)).data.isAcceptingResponses == true
+                      ) &&
+                      isValidId(submissionId) &&
+                      isSubmissionValid(incoming()) &&
+                      incoming().submittedAt == request.time;
+                      
+        allow update: if false;
+        allow delete: if isSignedIn() && get(/databases/$(database)/documents/forms/$(formId)).data.creatorId == request.auth.uid;
+      }
+    }
+  }
+}
