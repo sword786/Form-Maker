@@ -27,6 +27,44 @@ export function FormViewer() {
 
   const [viewingResponse, setViewingResponse] = useState(false);
 
+  const theme = form?.theme || { primaryColor: 'purple', backgroundColor: 'gray', fontFamily: 'sans' };
+
+  const bgClass = {
+    white: 'bg-white', gray: 'bg-gray-50', slate: 'bg-slate-50', zinc: 'bg-zinc-50', neutral: 'bg-neutral-50', stone: 'bg-stone-50',
+    red: 'bg-red-50', orange: 'bg-orange-50', amber: 'bg-amber-50', yellow: 'bg-yellow-50', lime: 'bg-lime-50',
+    green: 'bg-green-50', emerald: 'bg-emerald-50', teal: 'bg-teal-50', cyan: 'bg-cyan-50', sky: 'bg-sky-50',
+    blue: 'bg-blue-50', indigo: 'bg-indigo-50', violet: 'bg-violet-50', purple: 'bg-purple-50', fuchsia: 'bg-fuchsia-50',
+    pink: 'bg-pink-50', rose: 'bg-rose-50'
+  }[theme.backgroundColor as string] || 'bg-gray-50';
+
+  const primaryBgClass = {
+    purple: 'bg-purple-600 hover:bg-purple-700', blue: 'bg-blue-600 hover:bg-blue-700', green: 'bg-green-600 hover:bg-green-700',
+    rose: 'bg-rose-600 hover:bg-rose-700', orange: 'bg-orange-600 hover:bg-orange-700', slate: 'bg-slate-700 hover:bg-slate-800',
+    indigo: 'bg-indigo-600 hover:bg-indigo-700', amber: 'bg-amber-600 hover:bg-amber-700'
+  }[theme.primaryColor as string] || 'bg-purple-600 hover:bg-purple-700';
+
+  const primaryTextClass = {
+    purple: 'text-purple-600', blue: 'text-blue-600', green: 'text-green-600',
+    rose: 'text-rose-600', orange: 'text-orange-600', slate: 'text-slate-700',
+    indigo: 'text-indigo-600', amber: 'text-amber-600'
+  }[theme.primaryColor as string] || 'text-purple-600';
+
+  const primaryBorderClass = {
+    purple: 'border-t-purple-600', blue: 'border-t-blue-600', green: 'border-t-green-600',
+    rose: 'border-t-rose-600', orange: 'border-t-orange-600', slate: 'border-t-slate-700',
+    indigo: 'border-t-indigo-600', amber: 'border-t-amber-600'
+  }[theme.primaryColor as string] || 'border-t-purple-600';
+
+  const primaryRingClass = {
+    purple: 'focus-visible:border-purple-600 focus:ring-purple-600', blue: 'focus-visible:border-blue-600 focus:ring-blue-600', green: 'focus-visible:border-green-600 focus:ring-green-600',
+    rose: 'focus-visible:border-rose-600 focus:ring-rose-600', orange: 'focus-visible:border-orange-600 focus:ring-orange-600', slate: 'focus-visible:border-slate-700 focus:ring-slate-700',
+    indigo: 'focus-visible:border-indigo-600 focus:ring-indigo-600', amber: 'focus-visible:border-amber-600 focus:ring-amber-600'
+  }[theme.primaryColor as string] || 'focus-visible:border-purple-600 focus:ring-purple-600';
+
+  const fontClass = {
+    sans: 'font-sans', serif: 'font-serif', mono: 'font-mono'
+  }[theme.fontFamily as string] || 'font-sans';
+
   useEffect(() => {
     const fetchForm = async () => {
       try {
@@ -158,12 +196,12 @@ export function FormViewer() {
     }
   };
 
-  if (loading) return <div className="text-center py-20 bg-gray-50 min-h-screen">Loading...</div>;
-  if (!form) return <div className="text-center py-20 text-red-500 bg-gray-50 min-h-screen">Form not found.</div>;
+  if (loading) return <div className={`text-center py-20 ${bgClass} min-h-screen ${fontClass}`}>Loading...</div>;
+  if (!form) return <div className={`text-center py-20 text-red-500 ${bgClass} min-h-screen ${fontClass}`}>Form not found.</div>;
 
   if (form.isAcceptingResponses === false) {
     return (
-      <div className="bg-gray-50 min-h-screen pt-20 px-4">
+      <div className={`${bgClass} min-h-screen pt-20 px-4 ${fontClass}`}>
         <div className="max-w-2xl mx-auto">
           <Card className="text-center py-16 border-t-8 border-t-gray-500 shadow-md">
             <CardHeader>
@@ -180,9 +218,9 @@ export function FormViewer() {
   if (submitted) {
     if (viewingResponse) {
       return (
-        <div className="bg-gray-50 min-h-screen pt-10 pb-20 px-4">
+        <div className={`${bgClass} min-h-screen pt-10 pb-20 px-4 ${fontClass}`}>
           <div className="max-w-3xl mx-auto space-y-6">
-            <Card className="border-t-8 border-t-purple-600 shadow-sm border-x-0 sm:border-x sm:border-b">
+            <Card className={`border-t-8 ${primaryBorderClass} shadow-sm border-x-0 sm:border-x sm:border-b`}>
               <CardHeader className="pt-8 pb-8 px-6 sm:px-8">
                 <CardTitle className="text-3xl sm:text-4xl leading-tight font-bold text-gray-900 tracking-tight">{form.title}</CardTitle>
                 <CardDescription className="text-base sm:text-lg mt-4 whitespace-pre-wrap text-gray-700">Your Response</CardDescription>
@@ -216,9 +254,9 @@ export function FormViewer() {
     }
 
     return (
-      <div className="bg-gray-50 min-h-screen pt-20 px-4">
+      <div className={`${bgClass} min-h-screen pt-20 px-4 ${fontClass}`}>
         <div className="max-w-2xl mx-auto">
-          <Card className="text-center py-16 border-t-8 border-t-purple-600 shadow-md">
+          <Card className={`text-center py-16 border-t-8 ${primaryBorderClass} shadow-md`}>
             <CardHeader>
               <CardTitle className="text-3xl text-gray-900">Thank You!</CardTitle>
               <CardDescription className="text-lg mt-2 whitespace-pre-wrap">
@@ -242,10 +280,10 @@ export function FormViewer() {
   const progressPercent = pages.length > 1 ? ((currentPage + 1) / pages.length) * 100 : 100;
 
   return (
-    <div className="bg-gray-50 min-h-screen pt-10 pb-20 px-4">
+    <div className={`${bgClass} min-h-screen pt-10 pb-20 px-4 ${fontClass}`}>
       <div className="max-w-3xl mx-auto space-y-6">
         {isFirstPage && (
-          <Card className="border-t-8 border-t-purple-600 shadow-sm border-x-0 sm:border-x sm:border-b">
+          <Card className={`border-t-8 ${primaryBorderClass} shadow-sm border-x-0 sm:border-x sm:border-b`}>
             <CardHeader className="pt-8 pb-8 px-6 sm:px-8">
               <CardTitle className="text-3xl sm:text-4xl leading-tight font-bold text-gray-900 tracking-tight">{form.title}</CardTitle>
               {form.description && <CardDescription className="text-base sm:text-lg mt-4 whitespace-pre-wrap text-gray-700">{form.description}</CardDescription>}
@@ -275,7 +313,7 @@ export function FormViewer() {
         )}
 
         {currentData?.header && (
-          <div className="pt-6 pb-2 border-b-2 border-purple-100 mt-8 mb-4 px-2 sm:px-0">
+          <div className="pt-6 pb-2 border-b-2 border-gray-200 mt-8 mb-4 px-2 sm:px-0">
             <h3 className="text-2xl font-semibold text-gray-900">{currentData.header.title}</h3>
             {currentData.header.description && <p className="text-gray-600 mt-2 whitespace-pre-wrap">{currentData.header.description}</p>}
           </div>
@@ -283,7 +321,7 @@ export function FormViewer() {
 
         <form onSubmit={(e) => { e.preventDefault(); if (isLastPage) { handleSubmit(e); } else { handleNext(); } }} className="space-y-6">
           {currentData?.questions.map((q: any) => (
-            <Card key={q.id} id={`question-${q.id}`} className={`shadow-sm border-x-0 sm:border-x sm:border-y transition-colors duration-200 ${answers[q.id] === undefined && q.required ? "hover:border-purple-300" : ""}`}>
+            <Card key={q.id} id={`question-${q.id}`} className={`shadow-sm border-x-0 sm:border-x sm:border-y transition-colors duration-200 ${answers[q.id] === undefined && q.required ? "hover:border-gray-400" : ""}`}>
               <CardContent className="pt-6 sm:pt-8 px-6 sm:px-8 space-y-6">
                 <div className="flex gap-1 mb-2">
                   <Label className="text-base font-medium text-gray-900 leading-snug">{q.title}</Label>
@@ -295,7 +333,7 @@ export function FormViewer() {
                     placeholder="Your answer"
                     value={answers[q.id] || ''}
                     onChange={e => setAnswers({ ...answers, [q.id]: e.target.value })}
-                    className="border-0 border-b border-gray-300 rounded-none focus-visible:ring-0 focus-visible:border-purple-600 px-0 pb-2 shadow-none resize-none min-h-[40px] text-base"
+                    className={`border-0 border-b border-gray-300 rounded-none px-0 pb-2 shadow-none resize-none min-h-[40px] text-base focus-visible:ring-0 ${primaryRingClass}`}
                   />
                 )}
 
@@ -313,13 +351,13 @@ export function FormViewer() {
                   >
                     {(q.options || []).map((opt: string, i: number) => (
                       <div className="flex items-center space-x-3" key={i}>
-                        <RadioGroupItem value={opt} id={`${q.id}-${i}`} className="w-5 h-5 text-purple-600 border-gray-300" />
+                        <RadioGroupItem value={opt} id={`${q.id}-${i}`} className={`w-5 h-5 border-gray-300 ${primaryTextClass}`} />
                         <Label htmlFor={`${q.id}-${i}`} className="font-normal text-base text-gray-700 cursor-pointer">{opt}</Label>
                       </div>
                     ))}
                     {q.allowOther && (
                       <div className="flex items-center space-x-3">
-                        <RadioGroupItem value="__other__" id={`${q.id}-other`} className="w-5 h-5 text-purple-600 border-gray-300" />
+                        <RadioGroupItem value="__other__" id={`${q.id}-other`} className={`w-5 h-5 border-gray-300 ${primaryTextClass}`} />
                         <Label htmlFor={`${q.id}-other`} className="font-normal text-base text-gray-700 cursor-pointer">Other:</Label>
                         <Input 
                           value={(answers[q.id] !== undefined && !q.options.includes(answers[q.id])) ? answers[q.id] : ''}
@@ -329,7 +367,7 @@ export function FormViewer() {
                                setAnswers({ ...answers, [q.id]: '' });
                              }
                           }}
-                          className="flex-1 border-0 border-b border-gray-300 rounded-none focus-visible:ring-0 focus-visible:border-purple-600 px-0 h-8 shadow-none" 
+                          className={`flex-1 border-0 border-b border-gray-300 rounded-none focus-visible:ring-0 px-0 h-8 shadow-none ${primaryRingClass}`} 
                         />
                       </div>
                     )}
@@ -346,7 +384,7 @@ export function FormViewer() {
                         <div className="flex items-center space-x-3" key={i}>
                           <Checkbox 
                             id={`${q.id}-${i}`} 
-                            className="w-5 h-5 text-purple-600 border-gray-300"
+                            className={`w-5 h-5 border-gray-300 ${primaryTextClass}`}
                             checked={(answers[q.id] || []).includes(opt)}
                             onCheckedChange={(checked) => {
                               const current = [...(answers[q.id] || [])];
@@ -366,7 +404,7 @@ export function FormViewer() {
                         <div className="flex items-center space-x-3">
                            <Checkbox 
                              id={`${q.id}-other`}
-                             className="w-5 h-5 text-purple-600 border-gray-300"
+                             className={`w-5 h-5 border-gray-300 ${primaryTextClass}`}
                              checked={hasOther}
                              onCheckedChange={(checked) => {
                                let current = [...(answers[q.id] || [])].filter((v: string) => q.options.includes(v));
@@ -391,7 +429,7 @@ export function FormViewer() {
                                  setAnswers({ ...answers, [q.id]: current });
                                }
                              }}
-                             className="flex-1 border-0 border-b border-gray-300 rounded-none focus-visible:ring-0 focus-visible:border-purple-600 px-0 h-8 shadow-none"
+                             className={`flex-1 border-0 border-b border-gray-300 rounded-none px-0 h-8 shadow-none ${primaryRingClass.split(' ')[0]}`}
                            />
                         </div>
                       )}
@@ -404,7 +442,7 @@ export function FormViewer() {
                     value={answers[q.id] || ''} 
                     onValueChange={v => setAnswers({ ...answers, [q.id]: v })}
                   >
-                    <SelectTrigger className="w-full text-base py-6 focus:ring-purple-600">
+                    <SelectTrigger className={`w-full text-base py-6 focus-visible:ring-0 ${primaryRingClass}`}>
                       <SelectValue placeholder="Choose" />
                     </SelectTrigger>
                     <SelectContent>
@@ -427,7 +465,7 @@ export function FormViewer() {
                           value={i} 
                           checked={answers[q.id] === i.toString()}
                           onChange={() => setAnswers({ ...answers, [q.id]: i.toString() })}
-                          className="w-5 h-5 text-purple-600 border-gray-300 focus:ring-purple-600 cursor-pointer"
+                          className={`w-5 h-5 border-gray-300 cursor-pointer ${primaryTextClass} ${primaryRingClass}`}
                         />
                       </div>
                     ))}
@@ -449,11 +487,11 @@ export function FormViewer() {
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-500 font-medium">Page {currentPage + 1} of {pages.length}</span>
               {isLastPage ? (
-                <Button type="submit" size="lg" disabled={submitting} className="bg-purple-600 hover:bg-purple-700 shadow-md transition-all">
+                <Button type="submit" size="lg" disabled={submitting} className={`${primaryBgClass} text-white shadow-md transition-all`}>
                   {submitting ? 'Submitting...' : 'Submit'}
                 </Button>
               ) : (
-                <Button type="button" onClick={handleNext} size="lg" className="bg-purple-600 hover:bg-purple-700 shadow-md transition-all">
+                <Button type="button" onClick={handleNext} size="lg" className={`${primaryBgClass} text-white shadow-md transition-all`}>
                   Next
                 </Button>
               )}

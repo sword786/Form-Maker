@@ -39,6 +39,7 @@ export function FormBuilder() {
   const [collectEmail, setCollectEmail] = useState(false);
   const [showProgressBar, setShowProgressBar] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState('Your response has been recorded.');
+  const [theme, setTheme] = useState({ primaryColor: 'purple', backgroundColor: 'gray', fontFamily: 'sans' });
   const [loading, setLoading] = useState(formId !== 'create');
   const [saving, setSaving] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
@@ -64,6 +65,7 @@ export function FormBuilder() {
           setCollectEmail(data.collectEmail ?? false);
           setShowProgressBar(data.showProgressBar ?? false);
           setConfirmationMessage(data.confirmationMessage || 'Your response has been recorded.');
+          if (data.theme) setTheme(data.theme);
         } else {
           toast.error("Form not found or you don't have permission.");
           navigate('/');
@@ -90,6 +92,7 @@ export function FormBuilder() {
         collectEmail,
         showProgressBar,
         confirmationMessage,
+        theme,
         creatorId: user.uid,
         updatedAt: serverTimestamp(),
       };
@@ -209,9 +212,28 @@ export function FormBuilder() {
     toast.success("Link copied to clipboard!");
   }
 
+  const bgClass = {
+    white: 'bg-white', gray: 'bg-gray-50', slate: 'bg-slate-50', zinc: 'bg-zinc-50', neutral: 'bg-neutral-50', stone: 'bg-stone-50',
+    red: 'bg-red-50', orange: 'bg-orange-50', amber: 'bg-amber-50', yellow: 'bg-yellow-50', lime: 'bg-lime-50',
+    green: 'bg-green-50', emerald: 'bg-emerald-50', teal: 'bg-teal-50', cyan: 'bg-cyan-50', sky: 'bg-sky-50',
+    blue: 'bg-blue-50', indigo: 'bg-indigo-50', violet: 'bg-violet-50', purple: 'bg-purple-50', fuchsia: 'bg-fuchsia-50',
+    pink: 'bg-pink-50', rose: 'bg-rose-50'
+  }[theme.backgroundColor as string] || 'bg-gray-50';
+
+  const fontClass = {
+    sans: 'font-sans', serif: 'font-serif', mono: 'font-mono'
+  }[theme.fontFamily as string] || 'font-sans';
+
+  const primaryBorderClass = {
+    purple: 'border-t-purple-600', blue: 'border-t-blue-600', green: 'border-t-green-600',
+    rose: 'border-t-rose-600', orange: 'border-t-orange-600', slate: 'border-t-slate-700',
+    indigo: 'border-t-indigo-600', amber: 'border-t-amber-600'
+  }[theme.primaryColor as string] || 'border-t-purple-600';
+
   return (
-    <div className="max-w-3xl mx-auto space-y-8 pb-20">
-      <div className="flex justify-between items-center bg-white p-4 sticky top-16 z-10 border-b border-gray-100 -mx-4 sm:mx-0 sm:rounded-xl sm:border shadow-sm flex-wrap gap-4">
+    <div className={`min-h-screen ${bgClass} ${fontClass} pt-6 px-4`}>
+     <div className="max-w-3xl mx-auto space-y-8 pb-20">
+      <div className="flex justify-between items-center bg-white p-4 sticky top-6 z-10 border border-gray-200 rounded-xl shadow-sm flex-wrap gap-4">
         <div className="flex items-center space-x-3">
           <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
             <ArrowLeft className="w-5 h-5" />
@@ -251,10 +273,10 @@ export function FormBuilder() {
 
       <div className={formId !== 'create' && activeTab === 'settings' ? 'hidden' : 'block'}>
 
-      <Card className="border-t-4 border-t-purple-600">
+      <Card className={`border-t-4 ${primaryBorderClass}`}>
         <CardContent className="pt-6 space-y-4">
           <Input 
-            className="text-3xl font-bold border-0 border-b-2 rounded-none px-0 focus-visible:ring-0 focus-visible:border-purple-600 h-auto py-2"
+            className="text-3xl font-bold border-0 border-b-2 rounded-none px-0 focus-visible:ring-0 h-auto py-2"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Form Title"
@@ -268,9 +290,9 @@ export function FormBuilder() {
         </CardContent>
       </Card>
 
-      <Card className="bg-purple-50 border-purple-100">
+      <Card className="bg-gray-50 border-gray-200">
         <CardContent className="pt-6 space-y-4">
-          <div className="flex items-center space-x-2 text-purple-700">
+          <div className="flex items-center space-x-2 text-gray-700">
             <Sparkles className="w-5 h-5" />
             <span className="font-medium">Generate questions with AI</span>
           </div>
@@ -482,8 +504,92 @@ export function FormBuilder() {
                 </div>
              </CardContent>
            </Card>
+
+           <Card>
+             <CardContent className="pt-6 space-y-6">
+                <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Theme Settings</h3>
+                
+                <div className="space-y-3">
+                  <Label className="text-base">Primary Color</Label>
+                  <div className="flex flex-wrap gap-3">
+                    {['purple', 'blue', 'green', 'rose', 'orange', 'slate', 'indigo', 'amber'].map(color => (
+                       <button
+                         key={color}
+                         onClick={() => setTheme({ ...theme, primaryColor: color })}
+                         className={`w-8 h-8 rounded-full border-2 focus:outline-none transition-transform hover:scale-110 ${theme.primaryColor === color ? 'border-gray-900 ring-2 ring-offset-2 ring-gray-900' : 'border-transparent'}`}
+                         style={{ backgroundColor: color === 'purple' ? '#9333ea' : color === 'blue' ? '#2563eb' : color === 'green' ? '#16a34a' : color === 'rose' ? '#e11d48' : color === 'orange' ? '#ea580c' : color === 'slate' ? '#475569' : color === 'indigo' ? '#4f46e5' : '#d97706' }}
+                       />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <Label className="text-base">Background Color</Label>
+                  <div className="flex flex-wrap gap-3">
+                    {['gray', 'slate', 'zinc', 'neutral', 'stone', 'red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'ping', 'rose', 'white'].map(color => (
+                       <button
+                         key={color}
+                         onClick={() => setTheme({ ...theme, backgroundColor: color })}
+                         className={`w-8 h-8 rounded-full border-2 focus:outline-none transition-transform hover:scale-110 ${theme.backgroundColor === color ? 'border-gray-900 ring-2 ring-offset-2 ring-gray-900' : 'border-gray-200'}`}
+                         style={{ 
+                            backgroundColor: color === 'white' ? '#ffffff' : 
+                                             color === 'gray' ? '#f9fafb' : 
+                                             color === 'slate' ? '#f8fafc' : 
+                                             color === 'zinc' ? '#fafafa' : 
+                                             color === 'neutral' ? '#fafafa' : 
+                                             color === 'stone' ? '#fafaf9' : 
+                                             color === 'red' ? '#fef2f2' : 
+                                             color === 'orange' ? '#fff7ed' : 
+                                             color === 'amber' ? '#fffbeb' :
+                                             color === 'yellow' ? '#fefce8' :
+                                             color === 'lime' ? '#f7fee7' :
+                                             color === 'green' ? '#f0fdf4' :
+                                             color === 'emerald' ? '#ecfdf5' :
+                                             color === 'teal' ? '#f0fdfa' :
+                                             color === 'cyan' ? '#ecfeff' :
+                                             color === 'sky' ? '#f0f9ff' :
+                                             color === 'blue' ? '#eff6ff' :
+                                             color === 'indigo' ? '#eef2ff' :
+                                             color === 'violet' ? '#f5f3ff' :
+                                             color === 'purple' ? '#faf5ff' :
+                                             color === 'fuchsia' ? '#fdf4ff' :
+                                             color === 'pink' ? '#fdf2f8' :
+                                             '#fff1f2' // rose
+                         }}
+                       />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <Label className="text-base">Font Family</Label>
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => setTheme({ ...theme, fontFamily: 'sans' })}
+                      className={`px-4 py-2 border rounded-md font-sans ${theme.fontFamily === 'sans' ? 'bg-gray-100 border-gray-900' : 'border-gray-300'}`}
+                    >
+                      Sans Serif
+                    </button>
+                    <button
+                      onClick={() => setTheme({ ...theme, fontFamily: 'serif' })}
+                      className={`px-4 py-2 border rounded-md font-serif ${theme.fontFamily === 'serif' ? 'bg-gray-100 border-gray-900' : 'border-gray-300'}`}
+                    >
+                      Serif
+                    </button>
+                    <button
+                      onClick={() => setTheme({ ...theme, fontFamily: 'mono' })}
+                      className={`px-4 py-2 border rounded-md font-mono ${theme.fontFamily === 'mono' ? 'bg-gray-100 border-gray-900' : 'border-gray-300'}`}
+                    >
+                      Monospace
+                    </button>
+                  </div>
+                </div>
+
+             </CardContent>
+           </Card>
         </div>
       </div>
+     </div>
     </div>
   );
 }

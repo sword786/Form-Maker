@@ -24,6 +24,7 @@ service cloud.firestore {
              (!('collectEmail' in data) || data.collectEmail is bool) &&
              (!('showProgressBar' in data) || data.showProgressBar is bool) &&
              (!('confirmationMessage' in data) || data.confirmationMessage is string) &&
+             (!('theme' in data) || data.theme is map) &&
              (!('aiAnalysis' in data) || data.aiAnalysis is map);
     }
 
@@ -51,7 +52,7 @@ service cloud.firestore {
                     incoming().creatorId == existing().creatorId &&
                     incoming().createdAt == existing().createdAt &&
                     incoming().updatedAt == request.time &&
-                    incoming().diff(existing()).affectedKeys().hasOnly(['title', 'description', 'questions', 'isAcceptingResponses', 'collectEmail', 'showProgressBar', 'confirmationMessage', 'aiAnalysis', 'updatedAt']);
+                    incoming().diff(existing()).affectedKeys().hasOnly(['title', 'description', 'questions', 'isAcceptingResponses', 'collectEmail', 'showProgressBar', 'confirmationMessage', 'theme', 'aiAnalysis', 'updatedAt']);
 
       allow delete: if isSignedIn() && existing().creatorId == request.auth.uid;
 

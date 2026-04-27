@@ -14,6 +14,7 @@
             "type": "object"
           }
         },
+        "theme": { "type": "object" },
         "aiAnalysis": { "type": "object" },
         "createdAt": { "type": "string", "format": "timestamp" },
         "updatedAt": { "type": "string", "format": "timestamp" }
